@@ -1,59 +1,65 @@
-import * as React from 'react';
+
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
+import TableCell, { TableCellProps } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
+// import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { indexTokens } from '../tokens';
+import { Avatar, Box, Typography } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 interface Column {
   id: 'name' | 'price' | 'tvl';
   label: string;
   minWidth?: number;
-  align?: string;
+  align?: TableCellProps['align'];
   format?: (value: number) => string;
 }
 
 const columns: readonly Column[] = [
   { id: 'name', label: 'Token', minWidth: 80 },
-  { id: 'price', label: 'Price', minWidth: 50 },
+  { id: 'price', label: 'Price', minWidth: 50, align: 'left',
+  format: (value: number) => `$${value.toFixed(2)}`
+},
   {
     id: 'tvl',
     label: 'TVL',
     minWidth: 80,
-    align: 'center',
-    format: (value: number) => `$${value.toLocaleString('en-US')}`,
+    align: 'left',
+    format: (value: number) => {
+      const fixed = Number(value.toFixed(2));
+      let num = fixed
+      let suffix = ''
+      if (fixed / 100000 >= 1) {
+        num = fixed / 100000;
+        suffix = 'm'
+      } else if(fixed / 1000 >= 1) {
+        num = fixed / 1000;
+        suffix = 'k'
+      }
+      return `$${num.toFixed(3)}${suffix}`
+    },
   },
 ];
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
 
-
-
-const rows = [
-
-];
+const rows = indexTokens;
 
 export default function LandingTableComponent() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const page = 0
+  const rowsPerPage = 10;
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const navigate = useNavigate();
+
+  const handleOnRowClick = (address: string) => {
+    navigate(`/${address}/index`)
+  }
+
+  
 
   return (
     <Paper sx={{ width: '60%', overflow: 'hidden'}}>
@@ -77,32 +83,25 @@ export default function LandingTableComponent() {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.address} onClick={() => {handleOnRowClick(row.address)}}>
+                    <TableCell key={columns[0].id} align={columns[0].align}>
+                        <Box sx={{width: '100%', display: 'flex', textAlign: 'center', alignItems: 'center'}}>
+                        <Avatar src={row.url} />
+                        <Typography sx={{mx: '1rem'}}>{row.symbol}</Typography>
+                        </Box>
+                    </TableCell>
+                    <TableCell key={columns[1].id} align={columns[1].align}>
+                      <Typography>{columns[1].format!(34375.60)}</Typography>
+                    </TableCell>
+                    <TableCell key={columns[2].id} align={columns[2].align}>
+                      <Typography>{columns[2].format!(34375.60 * 1)}</Typography>
+                    </TableCell>
                   </TableRow>
                 );
               })}
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      /> */}
     </Paper>
   );
 }
