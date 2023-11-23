@@ -1,7 +1,7 @@
 import { Paper, Stack, Divider, Typography } from "@mui/material";
 import { NavLink, Outlet } from 'react-router-dom';
 import { Wrapper } from "../assets/wrapper/NavLinkWrapper";
-import DashboardTableCompoenent from "../components/DashboardTableComponent";
+import DashboardTableComponent from "../components/DashboardTableComponent";
 
 
 function Dashboard() {
@@ -16,7 +16,7 @@ function Dashboard() {
                                     Heading Comes Here 
                                 </Typography>
                             </Stack>
-                            <DashboardTableCompoenent />
+                            <DashboardTableComponent />
                         </Stack>
                         <Divider orientation="vertical" flexItem />
                         <Stack direction="column" sx={{ width: "40%", alignItems: "center" }}>

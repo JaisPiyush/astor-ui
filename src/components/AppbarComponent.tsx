@@ -12,7 +12,8 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+
+import { MetaMaskButton } from "@metamask/sdk-react-ui";
 
 interface Props {
   /**
@@ -67,19 +68,17 @@ export default function AppbarComponent(props: Props) {
           >
             <MenuIcon />
           </IconButton>
+          
+          <img src="/img/astor.png" alt="logo" height={60} />
           <Typography
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-            ASTOR
+            Astor
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }}>
-                {item}
-              </Button>
-            ))}
+          <MetaMaskButton theme={"light"} color="white"></MetaMaskButton>
           </Box>
         </Toolbar>
       </AppBar>

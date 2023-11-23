@@ -1,16 +1,23 @@
-import {Stack } from "@mui/material"
-import LandingTableCompoenent from "../components/LandingTableComponent"
-
-
+import { Box, Stack } from "@mui/material";
+import LandingTableComponent from "../components/LandingTableComponent";
 
 function Landing() {
   return (
-    <Stack sx={{ width: "100%", height: "100%", padding: 3, backgroundColor: "#607d8b36" }}>
-      <Stack sx={{ padding: 2, width: "100%", height: "100%" }}>
-        <LandingTableCompoenent />
-      </Stack>
+    <Stack
+      sx={{
+        width: "100%",
+        height: "91vh",
+        padding: 3,
+        backgroundColor: "#000000",
+        
+      }}
+    >
+      <Box sx={{ padding: 2, width: "100%", height: "100%", display: 'flex',
+        justifyContent: 'center' }}>
+        <LandingTableComponent />
+      </Box>
     </Stack>
-  )
+  );
 }
 
-export default Landing
+export default Landing;
