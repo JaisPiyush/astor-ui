@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 mightymeld.secrets
+
+.env
+.env.production

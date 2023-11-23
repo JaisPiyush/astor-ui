@@ -12,6 +12,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { Token } from '../types';
 import { useGetIndexTokenData } from '../hooks/useGetIndexTokenData';
+import { formatFloatValue } from '../utils';
 
 interface Column {
   id: 'name' | 'price' | 'tvl';
@@ -24,7 +25,7 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'name', label: 'Token', minWidth: 80 },
   { id: 'price', label: 'Price', minWidth: 50, align: 'left',
-  format: (value: number) => `$${value.toFixed(2)}`
+  format: (value: number) => `$${formatFloatValue(value)}`
 },
   {
     id: 'tvl',
@@ -42,7 +43,7 @@ const columns: readonly Column[] = [
         num = fixed / 1000;
         suffix = 'k'
       }
-      return `$${num.toFixed(3)}${suffix}`
+      return `$${formatFloatValue(num)}${suffix}`
     },
   },
 ];
