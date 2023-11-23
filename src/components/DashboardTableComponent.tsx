@@ -8,8 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { IndexedToken } from '../types';
 // import { tokens } from '../tokens';
-import { useGetIndexedTokens } from '../hooks/useGetIndexedTokens';
-import { useParams } from 'react-router-dom';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useAppDispatch } from '../store/hook';
 import { globalActions } from '../store/globalSlice';
@@ -42,10 +40,8 @@ const columns: readonly Column[] = [
 
 
 
-export default function DashboardTableComponent() {
+export default function DashboardTableComponent({tokens}: {tokens: IndexedToken[]}) {
 
-  const {address} = useParams();
-  const tokens = useGetIndexedTokens(address as string);
   const dispatch = useAppDispatch();
 
   const handleOnClickRow = (row: IndexedToken) => {
@@ -77,7 +73,7 @@ export default function DashboardTableComponent() {
             {tokens
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} onClick={() => {handleOnClickRow(row)}}>
+                  <TableRow key={row.address} hover role="checkbox" tabIndex={-1} onClick={() => {handleOnClickRow(row)}}>
                   <TableCell key={columns[0].id} align={columns[0].align}>
                       <Box sx={{width: '100%', display: 'flex', textAlign: 'center', alignItems: 'center'}}>
                       <Avatar src={row.url} />

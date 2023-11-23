@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import globalReducer from './globalSlice'; 
+import indexedTokenReducer from './indexedTokenSlice';
 
 const store = configureStore({
   reducer: {
-    global: globalReducer
+    global: globalReducer,
+    indexedToken: indexedTokenReducer
     // Add more reducers as needed
   },
   // Other store configurations can go here (middleware, dev tools, etc.)
