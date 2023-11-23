@@ -10,6 +10,8 @@ import TableRow from '@mui/material/TableRow';
 import { indexTokens } from '../tokens';
 import { Avatar, Box, Typography } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { Token } from '../types';
+import { useGetIndexTokenData } from '../hooks/useGetIndexTokenData';
 
 interface Column {
   id: 'name' | 'price' | 'tvl';
@@ -53,13 +55,6 @@ export default function LandingTableComponent() {
   const rowsPerPage = 10;
 
 
-  const navigate = useNavigate();
-
-  const handleOnRowClick = (address: string) => {
-    navigate(`/${address}/index`)
-  }
-
-  
 
   return (
     <Paper sx={{ width: '60%', overflow: 'hidden'}}>
@@ -83,20 +78,7 @@ export default function LandingTableComponent() {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.address} onClick={() => {handleOnRowClick(row.address)}}>
-                    <TableCell key={columns[0].id} align={columns[0].align}>
-                        <Box sx={{width: '100%', display: 'flex', textAlign: 'center', alignItems: 'center'}}>
-                        <Avatar src={row.url} />
-                        <Typography sx={{mx: '1rem'}}>{row.symbol}</Typography>
-                        </Box>
-                    </TableCell>
-                    <TableCell key={columns[1].id} align={columns[1].align}>
-                      <Typography>{columns[1].format!(34375.60)}</Typography>
-                    </TableCell>
-                    <TableCell key={columns[2].id} align={columns[2].align}>
-                      <Typography>{columns[2].format!(34375.60 * 1)}</Typography>
-                    </TableCell>
-                  </TableRow>
+                   <IndexTokenRow key={row.address} row={row} />
                 );
               })}
           </TableBody>
@@ -104,4 +86,30 @@ export default function LandingTableComponent() {
       </TableContainer>
     </Paper>
   );
+}
+
+
+const IndexTokenRow = ({row}: {row: Token}) => {
+  const navigate = useNavigate();
+
+  const [price, tvl] = useGetIndexTokenData(row.address);
+
+  const handleOnRowClick = (address: string) => {
+    navigate(`/${address}/index`)
+  }
+
+  return (<TableRow hover role="checkbox" tabIndex={-1}  onClick={() => {handleOnRowClick(row.address)}}>
+  <TableCell key={columns[0].id} align={columns[0].align}>
+      <Box sx={{width: '100%', display: 'flex', textAlign: 'center', alignItems: 'center'}}>
+      <Avatar src={row.url} />
+      <Typography sx={{mx: '1rem'}}>{row.symbol}</Typography>
+      </Box>
+  </TableCell>
+  <TableCell key={columns[1].id} align={columns[1].align}>
+    <Typography>{columns[1].format!(price)}</Typography>
+  </TableCell>
+  <TableCell key={columns[2].id} align={columns[2].align}>
+    <Typography>{columns[2].format!(tvl)}</Typography>
+  </TableCell>
+</TableRow>)
 }
