@@ -3,13 +3,14 @@ import { Paper, Stack, Divider, Typography, Box } from "@mui/material";
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 import { Wrapper } from "../assets/wrapper/NavLinkWrapper";
 import DashboardTableComponent from "../components/DashboardTableComponent";
-import { tokensData } from "../tokens";
+import { USDT, cashPools, tokensData } from "../tokens";
 import { globalActions } from "../store/globalSlice";
 import { useAppDispatch, useAppSelector } from "../store/hook";
 import { useEffect} from "react";
-import { fetchIndexedTokenData, fetchIndexedTokenUserData } from "../store/indexedTokenSlice";
+import { fetchCurrentUserCashPoolBalance, fetchIndexedTokenData, fetchIndexedTokenUserData } from "../store/indexedTokenSlice";
 import { useAccount } from "@metamask/sdk-react-ui";
-
+import { viemPublicClient } from "../context/ViemContext";
+import { IndexTokenAbi } from "../abi/IndexTokenAbi";
 
 function Dashboard() {
     const {address} = useParams();
@@ -20,6 +21,31 @@ function Dashboard() {
         if (user) {
             dispatch(fetchIndexedTokenData(address as string));
             dispatch(fetchIndexedTokenUserData({token: address as string, account: user as string}));
+            dispatch(fetchCurrentUserCashPoolBalance({cashpool: cashPools[address as string], user: user as string}));
+        }
+        const unwatchIndexBalance = viemPublicClient.watchContractEvent({
+            address: address as any,
+            abi: IndexTokenAbi,
+            eventName: 'Transfer',
+            args: {to: user},
+            onLogs: () => {
+                dispatch(fetchIndexedTokenUserData({token: address as string, account: user as string}));
+            }
+        });
+
+        const unwatchCashPool = viemPublicClient.watchContractEvent({
+            address: USDT as any,
+            abi: IndexTokenAbi,
+            eventName: 'Transfer',
+            args: {from: user},
+            onLogs: () => {
+                dispatch(fetchCurrentUserCashPoolBalance({cashpool: cashPools[address as string], user: user as string}));
+            }
+        });
+
+        return () => {
+            unwatchIndexBalance();
+            unwatchCashPool();
         }
     }, [user])
 

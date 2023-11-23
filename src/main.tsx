@@ -4,8 +4,6 @@ import './index.css'
 import { Provider } from 'react-redux';
 import store from './store/store.ts'; 
 import { MetaMaskUIProvider } from '@metamask/sdk-react-ui';
-import { ViemContext, client } from './context/ViemContext.ts';
-
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -17,9 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     }
   }}>
   <Provider store={store}>
-   <ViemContext.Provider value={client}>
+
         <App />
-   </ViemContext.Provider>
+
   </Provider>
   </MetaMaskUIProvider>
 )

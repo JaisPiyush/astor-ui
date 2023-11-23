@@ -5,12 +5,16 @@ import { IndexedToken } from "../types";
 import { apiClient } from "../utils/client";
 import { tokensData } from "../tokens";
 import { globalActions } from "./globalSlice";
+import { viemPublicClient } from "../context/ViemContext";
+import { CashPoolAbi } from "../abi/CashPoolAbi";
+import { DECIMAL_PLACES } from "../constant";
 
 
 interface IndexedTokenState {
     tokens: IndexedToken[];
     indexPrice: number;
-    indexedTokenUserData: GetUserRelatedDataOfIndexToken
+    indexedTokenUserData: GetUserRelatedDataOfIndexToken;
+    currentUserCashPoolBalance: number;
 }
 
 const initialState: IndexedTokenState = {
@@ -19,7 +23,8 @@ const initialState: IndexedTokenState = {
     indexedTokenUserData: {
         indexedTokenBalance: 0,
         collectableIndexToken: 0
-    }
+    },
+    currentUserCashPoolBalance: 0
 }
 
 export const fetchIndexedTokenData = createAsyncThunk(
@@ -50,6 +55,26 @@ export const fetchIndexedTokenData = createAsyncThunk(
     }
 )
 
+export const fetchCurrentUserCashPoolBalance = createAsyncThunk(
+    'indexedToken/fetchCurrentUserCashPoolBalance',
+    async (args: {cashpool: string, user: string}, thunkAPI) => {
+        try {
+           const data = await viemPublicClient.readContract({
+                address: args.cashpool as any,
+                abi: CashPoolAbi,
+                functionName: 'getUserBalanceInCurrentNonce',
+                args: [args.user]
+           }) as bigint
+           return Number(data) / DECIMAL_PLACES;
+        } catch (e) {
+            thunkAPI.dispatch(globalActions.setAlert({
+                alert: 'unknow error',
+                type: 'error'
+            }));
+        }
+        return 0
+    }
+)
 
 interface GetUserRelatedDataOfIndexToken {
     indexedTokenBalance: number;
@@ -88,7 +113,10 @@ export const indexedTokenSlice = createSlice({
         })
         .addCase(fetchIndexedTokenUserData.fulfilled, (state, action) => {
             state.indexedTokenUserData = {...action.payload};
-            console.log(action.payload)
+
+        })
+        .addCase(fetchCurrentUserCashPoolBalance.fulfilled, (state, action) => {
+            state.currentUserCashPoolBalance = action.payload;
         })
     }
 })

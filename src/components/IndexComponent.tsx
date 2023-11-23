@@ -25,7 +25,7 @@ const IndexComponent = () => {
     setAmount(indexTokenBalance.toString())
   }
   
-  const handleOnCollectClick = async () => {}
+  // const handleOnCollectClick = async () => {}
   const handleOnBurnClick = async () => {
     if (amount.length === 0 || Number.isNaN(parseFloat(amount))) {
       return;

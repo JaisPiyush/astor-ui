@@ -49,3 +49,9 @@ export const tokensData: Record<string, Token> = {
         url: 'https://i.pinimg.com/736x/ae/63/70/ae6370269e0421920a5b4ab34ebe7387.jpg'
     }
 }
+
+export const cashPools: Record<string, string> = {
+    '0xD38ac076C909C8fF8D9f617422dfd51ec256AbaC': '0x0B05d210d8eC00f640Fd147cC4831D438A054fF7'
+}
+
+export const USDT = '0x557838aB4b0e37B20741827fe27B38DDfa68CE9A'
