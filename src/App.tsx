@@ -6,10 +6,19 @@ import Landing from "./pages/Landing";
 import Dashboard from './pages/Dashboard';
 import IndexComponent from './components/IndexComponent';
 import CashPoolComponent from './components/CashPoolComponent';
-import { useAppSelector } from './store/hook';
+import { useAppDispatch, useAppSelector } from './store/hook';
+import { globalActions } from './store/globalSlice';
 
 function App() {
   const [alert, type] = useAppSelector(state => [state.global.alert, state.global.type]);
+  const dispatch = useAppDispatch();
+
+  const handleSnackBarClose = () => {
+    dispatch(globalActions.setAlert({
+      alert: null,
+      type
+    }))
+  }
 
   return (
     <BrowserRouter>
@@ -24,7 +33,7 @@ function App() {
           </Route>
         </Routes>
       </main>
-      <Snackbar open={alert !== null} autoHideDuration={6000}>
+      <Snackbar open={alert !== null} autoHideDuration={3000} onClose={() => {handleSnackBarClose()}}>
         <Alert severity={type}>{alert}</Alert>
       </Snackbar>
     </BrowserRouter>

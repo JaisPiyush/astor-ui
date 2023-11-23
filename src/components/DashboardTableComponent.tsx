@@ -1,16 +1,21 @@
-import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
+// import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Token } from '../types';
+import { IndexedToken } from '../types';
+// import { tokens } from '../tokens';
+import { useGetIndexedTokens } from '../hooks/useGetIndexedTokens';
+import { useParams } from 'react-router-dom';
+import { Avatar, Box, Typography } from '@mui/material';
+import { useAppDispatch } from '../store/hook';
+import { globalActions } from '../store/globalSlice';
 
 interface Column {
-  id: keyof Token;
+  id: keyof IndexedToken;
   label: string;
   minWidth?: number;
   align?: 'right' | 'center';
@@ -19,78 +24,37 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'name', label: 'Name', minWidth: 80 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
-  },
+  {id: 'tvl', label: 'TVL', minWidth: 80, format: (value: number) => {
+    const fixed = Number(value.toFixed(2));
+    let num = fixed
+    let suffix = ''
+    if (fixed / 100000 >= 1) {
+      num = fixed / 100000;
+      suffix = 'm'
+    } else if(fixed / 1000 >= 1) {
+      num = fixed / 1000;
+      suffix = 'k'
+    }
+    return `$${num.toFixed(3)}${suffix}`
+  }},
+  {id: 'share', label: 'Holdings', minWidth: 100}
 ];
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number,
-): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
 
 export default function DashboardTableComponent() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const {address} = useParams();
+  const tokens = useGetIndexedTokens(address as string);
+  const dispatch = useAppDispatch();
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const handleOnClickRow = (row: IndexedToken) => {
+    navigator.clipboard.writeText(row.address);
+    dispatch(globalActions.setAlert({
+      alert: `${row.name} address copied`,
+      type: 'success'
+    }))
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -110,36 +74,28 @@ export default function DashboardTableComponent() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            {tokens
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
+                  <TableRow hover role="checkbox" tabIndex={-1} onClick={() => {handleOnClickRow(row)}}>
+                  <TableCell key={columns[0].id} align={columns[0].align}>
+                      <Box sx={{width: '100%', display: 'flex', textAlign: 'center', alignItems: 'center'}}>
+                      <Avatar src={row.url} />
+                      <Typography sx={{mx: '1rem'}}>{`${row.name} (${row.symbol})`}</Typography>
+                      </Box>
+                  </TableCell>
+                  <TableCell key={columns[1].id} align={columns[1].align}>
+                    <Typography>{columns[1].format!(row.tvl)}</Typography>
+                  </TableCell>
+                  <TableCell key={columns[2].id} align={columns[2].align}>
+                    <Typography>{row.share.toFixed(2)}%</Typography>
+                  </TableCell>
+                </TableRow>
                 );
               })}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 }

@@ -6,12 +6,12 @@ export const useGetIndexTokenData = (address: string) => {
     const [tvl, setTVL] = useState(0);
     useEffect(() => {
         if (price === 0) {
-            apiClient.get<number>(`/token/indexPrice?address=${address}`).then((data) => {
+            apiClient.get<number>(`/index/indexPrice?address=${address}`).then((data) => {
                 setPrice(data.data)
             })
         }
         if (tvl === 0) {
-            apiClient.get<number>(`/token/totalSupply?address=${address}`).then((data) => {
+            apiClient.get<number>(`/index/totalSupply?address=${address}`).then((data) => {
                 setTVL(data.data * price)
             })
         }

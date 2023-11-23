@@ -14,6 +14,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import { MetaMaskButton } from "@metamask/sdk-react-ui";
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   /**
@@ -54,6 +55,8 @@ export default function AppbarComponent(props: Props) {
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
+  const navigate = useNavigate()
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -74,6 +77,9 @@ export default function AppbarComponent(props: Props) {
             variant="h6"
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            onClick={() => {
+              navigate('/')
+            }}
           >
             Astor
           </Typography>

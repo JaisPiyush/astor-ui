@@ -14,7 +14,7 @@ const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    setAlert: (state: GlobalSlice, action: PayloadAction<{alert: string, type: GlobalSlice['type']}>) => {
+    setAlert: (state: GlobalSlice, action: PayloadAction<{alert: string | null, type: GlobalSlice['type']}>) => {
       state.alert = action.payload.alert;
       state.type = action.payload.type;
     }

@@ -4,3 +4,8 @@ export interface Token {
     symbol: string;
     url: string;
 }
+
+export interface IndexedToken extends Token {
+    tvl: number;
+    share: number;
+}
